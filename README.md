@@ -16,6 +16,20 @@ The API runs on port 4000. `npm run build` creates a production client build and
 
 `POST /api/auth/register`, `POST /api/auth/login`, and `GET /api/auth/me` provide JWT authentication. Protected CRUD endpoints are available at `/api/patients`, `/api/appointments`, and `/api/records`; send `Authorization: Bearer <token>`. Admin-only deletion is enforced for patients and records. `GET /api/health` is public.
 
-## Production
+## Production deployment
 
-Build the client with `npm run build`, serve `client/dist` from a static host, and deploy the server with `npm start --workspace server`. Set `CLIENT_ORIGIN` to the deployed frontend URL and use a managed MongoDB instance.
+The repository includes deployment configuration for Render and Vercel:
+
+1. Create a MongoDB Atlas cluster and copy its connection string.
+2. In Render, create a Blueprint from this repository. The included `render.yaml`
+   deploys the API from `server/`. Set `MONGODB_URI` to the Atlas connection
+   string and set `CLIENT_ORIGIN` after the frontend is deployed.
+3. In Vercel, import this repository and set the project root directory to
+   `client`. Set `VITE_API_URL` to the deployed Render URL plus `/api`, for
+   example `https://telemed-api.onrender.com/api`.
+4. Copy the resulting Vercel URL into Render's `CLIENT_ORIGIN` environment
+   variable and redeploy the API.
+
+Vercel uses `client/vercel.json` so React Router routes work on refresh. Keep all
+provider secrets in their environment-variable dashboards; never commit `.env`
+files or database credentials.
