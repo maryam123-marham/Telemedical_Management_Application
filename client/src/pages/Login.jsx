@@ -1,0 +1,9 @@
+import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../auth';
+export default function Login() {
+  const { user, login, register } = useAuth(); const [mode, setMode] = useState('login'); const [form, setForm] = useState({ name: '', email: '', password: '' }); const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
+  if (user) return <Navigate to="/" replace />;
+  const submit = async (event) => { event.preventDefault(); setError(''); setBusy(true); try { await (mode === 'login' ? login({ email: form.email, password: form.password }) : register(form)); } catch (e) { setError(e.message); } finally { setBusy(false); } };
+  return <div className="login-page"><div className="login-card"><div className="brand large"><span className="brand-mark">+</span> TeleMed</div><h1>{mode === 'login' ? 'Welcome back' : 'Create staff account'}</h1><p className="muted">{mode === 'login' ? 'Sign in to your care workspace.' : 'Access your secure care workspace.'}</p><form onSubmit={submit}>{mode === 'register' && <label>Full name<input required minLength="2" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label>}<label>Email<input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} /></label><label>Password<input required minLength="8" type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} /></label>{error && <div className="error">{error}</div>}<button className="primary full" disabled={busy}>{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</button></form><button className="link-button switch" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}>{mode === 'login' ? 'Need an account? Register' : 'Already registered? Sign in'}</button></div></div>;
+}
